@@ -30,7 +30,7 @@ steeringMin = steeringMed - amplitude
 steeringMax = steeringMed + amplitude
 
 # Arm the ESC and set frequency to 50Hz
-def initializeAndPause():
+def initialize():
     pwm.set_pwm(throttle, 0, throttleMed)
     pwm.set_pwm(steering, 0, steeringMed)
     time.sleep(1.5)
@@ -41,7 +41,7 @@ def accel(percent):
         percent = 0
     elif (percent > 100):
         percent = 100
-        
+
     pulse = throttleMed + percent * 1.024
     pwm.set_pwm(throttle, 0, pulse)
 
@@ -54,4 +54,18 @@ def reverse(percent):
     pulse = throttleMed - percent * 1.024
     pwm.set_pwm(throttle, 0, pulse)
 
-def turn(angle):
+def stop():
+    pwm.set_pwm(throttle, 0, throttleMed)
+
+def turnRight():
+    pwm.set_pwm(steering, 0, steeringMin)
+
+def turnLeft():
+    pwm.set_pwm(steering, 0, steeringMax)
+
+def straighten():
+    pwm.set_pwm(steering, 0, steeringMed)
+
+def turnInPlace(degree):
+    #TODO: use an N-point turn to move this much
+    return
