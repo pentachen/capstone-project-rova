@@ -27,9 +27,9 @@ angleView = 160
 
 # initialize the camera and grab a reference to the raw camera capture
 camera = PiCamera()
-camera.resolution = (640, 480)
+camera.resolution = (256, 144)
 camera.framerate = 5
-rawCapture = PiRGBArray(camera, size=(640, 480))
+rawCapture = PiRGBArray(camera, size=(256, 144))
 
 # allow the camera to warmup
 time.sleep(0.1)
@@ -82,8 +82,10 @@ def look_for_balls(image):
 
 def determine_closest_center(image, error):
 	cnts = find_centers(image)
-	height, width = image.shape
+	print image.shape
+	height, width, _ = image.shape
 	center = (-1,-1)
+	radius = -1
 
 	if len(cnts) > 0:
 		# assume that largest contour is the closest ball
@@ -94,7 +96,7 @@ def determine_closest_center(image, error):
 		if (abs(y - center[1]) < 20):
 			print "Probably the right ball"
 
-	return center
+	return center, radius
 
 def look_for_marker(color):
 	# Returns angle and position
@@ -127,8 +129,11 @@ for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=
 
 		data["angle"], data["ball_found"], data["ball_center"] = look_for_balls(image)
 
+		print data["ball_found"]
+
 		if not data["ball_found"]:
 			data["angle"] = angleView/2
+			time.sleep(2)
 
 		state_changed = True
 		curr_state = states[1]
@@ -154,7 +159,8 @@ for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=
 
 	elif curr_state == states[2]:
 		if state_changed:
-			data["ball_center"], data["ball_radius"] = determine_closest_center()
+			data["ball_center"], data["ball_radius"] = determine_closest_center(image, 15)
+			radius = data["ball_radius"]
 			bbox = (data["ball_center"][0]-radius/2, data["ball_center"][1]-radius/2, radius+10, radius+10)
 			ok = tracker.init(image, bbox)
 			state_changed = False
