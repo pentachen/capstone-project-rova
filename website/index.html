@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-16">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="we don't got no description">
+    <meta name="author" content="benjami1">
+
+    <link href="favicon.ico" rel="icon" type="image/png">
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/style.css" rel="stylesheet">
+    <script
+src="https://code.jquery.com/jquery-3.3.1.min.js"
+integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+crossorigin="anonymous"></script>
+    <script src="js/bootstrap.min.js" type="text/javascript"></script>
+
+    <title> rova | a tennis court robot </title>
+  </head>
+
+  <body>
+
+    <div class="container">
+      <div class="header clearfix">
+        <nav>
+          <ul class="nav nav-pills pull-right">
+            <li role="presentation"><a href="videos.html">videos</a></li>
+          </ul>
+        </nav>
+        <h3 class="text-muted">r o v a</h3>
+      </div>
+
+
+      <div class="jumbotron">
+        <div class="post-box leftalign">
+          <h2 class="smol centered"> 3/22/2018 </h2>
+          <p> benjami1 </p>
+          <p class="smol">
+            I managed to arm the ESC using PWM signals from our Raspberry Pi.  I also spent a while debugging our car to figure out why the steering servo wasn't responding.  In the end, I was able to control the steering using PWM signals as well, but I still have no idea what went wrong previously.  I'll spend the next week writing an API for controlling the RC car.
+          </p>
+          <br>
+          <p> rrpillai </p>
+          <p class="smol">
+            I wrote down the architecture for the finite state machine, which is the high level logic that our robot will use. The main states are looking for the ball, moving towards found balls, picking up found balls, looking for markers (which are placed at the corners of the half court) if the ball isn't found and moving to the markers. For next week, I plan to test this FSM once the movement API has been implemented and will hopefully have a demo of the car finding a ball and moving to it.
+          </p>
+          <br>
+          <p> davidyu </p>
+          <p class="smol">
+            I worked on the pickup mechanism for our tennis ball bot. I began by designing a blueprint for the mechanism through measurements of our RC car. I also researched and ordered the parts needed for the mechanism. From now through the weekend, I will be constructing a version of the mechanism and testing its capabilities.
+          </p>
+        </div>
+      </div>
+
+      <div class="row marketing">
+        <div class="col-lg-1"></div>
+        <div class="col-lg-10">
+          <div class="post-common">
+            <p class="smol">we went to spain</p>
+            
+            <table>
+              <tr>
+                <td>#2</td>
+                <td> | </td>
+                <td>spring break</td>
+                <td> | </td>
+                <td>3.15.2018</td>
+              </tr>
+            </table>
+          </div> 
+<!--          <h4 class="center-text">no previous updates</h4>-->
+        </div>
+        <div class="col-lg-1"></div>
+      </div>
+
+      <div class="row marketing">
+        <div class="col-lg-1"></div>
+        <div class="col-lg-10">
+          <div class="post-common">
+            <h1> benjami1 </h1>           
+            <p class="smol">
+              I set up this website and worked on communication between the Raspberry Pi and our RC car.  David and I brought the car to lab to verify what PWM signals were being sent in an effort to figure out how to arm the ESC and why the steering servo was unresponsive.  I wrote a small test script to control the RC car's throttle after using the remote control to arm the ESC.  I wrote some sections of our design document.
+            </p>
+            
+            <h1> rrpillai </h1>           
+            <p class="smol">
+              I worked on our computer vision algorithm by experimenting with contour detection.  I tested our algorithms on stock images of tennis balls, as well as custom configurations of tennis balls that we took photos of in less-than-ideal lighting.  We were able to detect balls and the net quite well.  I also wrote some sections of our design document.
+            </p>
+            
+            <h1> davidyu </h1>           
+            <p class="smol">
+              Ben and I used an oscilloscope to read the PWM signals going into the RC car's receiver.  I also blueprinted some more ideas for our pick-up mechanism and shopped around for compatible motors.  I wrote a large portion of the design document and managed to get the drivers working for our servo shield.
+            </p>
+            
+            <table>
+              <tr>
+                <td>#1</td>
+                <td> | </td>
+                <td>the beginning</td>
+                <td> | </td>
+                <td>3.8.2018</td>
+              </tr>
+            </table>
+          </div> 
+<!--          <h4 class="center-text">no previous updates</h4>-->
+        </div>
+        <div class="col-lg-1"></div>
+      </div>
+
+      <footer class="footer">
+        <a href="https://www.ece.cmu.edu/~ece500/"> 18-500 </a>
+      </footer>
+
+
+    </div>
+  </body>
+</html>

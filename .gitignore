@@ -99,3 +99,7 @@ ENV/
 
 # mypy
 .mypy_cache/
+
+# website media
+website/video/
+website/images/
