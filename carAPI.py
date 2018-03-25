@@ -31,7 +31,7 @@ steeringMed = base * 1.5 + offset
 
 # Arm the ESC and set frequency to 50Hz
 def initialize():
-    pwm.set_pwm_freq(50)
+    pwm.set_pwm_freq(50) 
     pwm.set_pwm(throttle, 0, throttleMed)
     pwm.set_pwm(steering, 0, steeringMed)
     time.sleep(1.5)
