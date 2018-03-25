@@ -65,12 +65,6 @@ def look_for_balls(image):
 		center = (int(M["m10"] / M["m00"]), int(M["m01"] / M["m00"]))
 
 		# only proceed if the radius meets a minimum size
-		if radius > 10:
-			# draw the circle and centroid on the image,
-			# then update the list of tracked points
-			cv2.circle(image, (int(x), int(y)), int(radius),
-				(0, 255, 255), 2)
-			cv2.circle(image, center, 5, (0, 0, 255), -1)
 
 		# Add code to convert center to distance and angle somehow
 		height, width, _ = image.shape
@@ -158,30 +152,20 @@ for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=
 
 
 	elif curr_state == states[2]:
-		if state_changed:
-			data["ball_center"], data["ball_radius"] = determine_closest_center(image, 15)
-			radius = data["ball_radius"]
-			bbox = (data["ball_center"][0]-radius/2, data["ball_center"][1]-radius/2, radius+10, radius+10)
-			ok = tracker.init(image, bbox)
-			state_changed = False
-
+		data["ball_center"], data["ball_radius"] = determine_closest_center(image, 15)
+		radius = data["ball_radius"]
+		bbox = (data["ball_center"][0]-radius/2, data["ball_center"][1]-radius/2, radius+10, radius+10)
+		if radius > 100:
+			state_changed = True
+			curr_state = states[3]
 		else:
-
-			ok, bbox = tracker.update(image)
-			if ok:
-				p1 = (int(bbox[0]), int(bbox[1]))
-				p2 = (int(bbox[0]+bbox[2]), int(bbox[1]+bbox[3]))
-				cv2.rectangle(image, p1, p2, (255,0,0), 2, 1)
-
-				if bbox[2] > 100 or bbox[3] > 100:
-					state_changed = True
-					curr_state = states[4]
-
-				else:
-					state_changed = False
-
-			else:
-				cv2.putText(image, "Tracking failure detected", (100, 80), cv2.FONT_HERSHEY_SIMPLEX, 0.75, (0,0,255),2)
+			state_changed = False
+			center = data["ball_center"]
+			# draw the circle and centroid on the image,
+			# then update the list of tracked points
+			cv2.circle(image, (int(center[0]), int(center[1])), int(radius),
+				(0, 255, 255), 2)
+			cv2.circle(image, center, 5, (0, 0, 255), -1)
 
 
 	elif curr_state == states[3]:
