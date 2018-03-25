@@ -11,7 +11,7 @@ import argparse
 import imutils
 import time
 import cv2
-
+import carAPI as car
 
 # define the lower and upper boundaries of the "green"
 # ball in the HSV color space, then initialize the
@@ -27,9 +27,9 @@ angleView = 160
 
 # initialize the camera and grab a reference to the raw camera capture
 camera = PiCamera()
-camera.resolution = (480, 360)
-camera.framerate = 10
-rawCapture = PiRGBArray(camera, size=(480, 360))
+camera.resolution = (640, 480)
+camera.framerate = 5
+rawCapture = PiRGBArray(camera, size=(640, 480))
 
 # allow the camera to warmup
 time.sleep(0.1)
@@ -101,13 +101,6 @@ def look_for_marker(color):
 
 	return 0, False
 
-def move(angle):
-	# Just put in code to move wheels for now
-	pass
-
-def turn_left(angle):
-	pass
-
 def pickup():
 	pass
 
@@ -144,7 +137,7 @@ for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=
 	elif curr_state == states[1]:
 
 		# Turn left takes in an angle
-		turn_left(data["angle"])
+		car.turnLeft(data["angle"])
 		state_changed = True
 
 		if not data["ball_found"]:
@@ -188,7 +181,7 @@ for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=
 		pickup()
 		t_end = time.time() + 65
 		while time.time() < t_end:
-			move(50)
+			car.accel(30)
 		state_changed = True
 		curr_state = states[4]
 

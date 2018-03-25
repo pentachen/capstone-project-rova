@@ -19,22 +19,22 @@ steering = 15
 
 # Configure min and max pulse lengths, out of 4096
 base = 4096 / 20
-throttleMin = base
+#throttleMin = base
 throttleMed = base * 1.5
-throttleMax = base * 2
+#throttleMax = base * 2
 
 offset = 29
-amplitude = 70
+steeringAmplitude = 70
 steeringMed = base * 1.5 + offset
-steeringMin = steeringMed - amplitude
-steeringMax = steeringMed + amplitude
+#steeringMin = steeringMed - steeringAmplitude
+#steeringMax = steeringMed + steeringAmplitude
 
 # Arm the ESC and set frequency to 50Hz
 def initialize():
+    pwm.set_pwm_freq(50)
     pwm.set_pwm(throttle, 0, throttleMed)
     pwm.set_pwm(steering, 0, steeringMed)
     time.sleep(1.5)
-    pwm.set_pwm_freq(50)
 
 def accel(percent):
     if (percent < 0):
@@ -42,7 +42,7 @@ def accel(percent):
     elif (percent > 100):
         percent = 100
 
-    pulse = throttleMed + percent * 1.024
+    pulse = throttleMed + (base * percent / 100.0)
     pwm.set_pwm(throttle, 0, pulse)
 
 def reverse(percent):
@@ -51,21 +51,34 @@ def reverse(percent):
     elif (percent > 100):
         percent = 100
 
-    pulse = throttleMed - percent * 1.024
+    pulse = throttleMed - (base * percent / 100.0)
     pwm.set_pwm(throttle, 0, pulse)
 
 def stop():
     pwm.set_pwm(throttle, 0, throttleMed)
 
-def turnRight():
-    pwm.set_pwm(steering, 0, steeringMin)
+# FSM uses angle, 0 to 80 degrees?
+def turnRight(percent):
+    if (percent < 0):
+        percent = 0
+    elif (percent > 100):
+        percent = 100
 
-def turnLeft():
-    pwm.set_pwm(steering, 0, steeringMax)
+    pulse = steeringMed - (steeringAmplitude * percent / 100.0)
+    pwm.set_pwm(steering, 0, pulse)
+
+def turnLeft(percent):
+    if (percent < 0):
+        percent = 0
+    elif (percent > 100):
+        percent = 100
+
+    pulse = steeringMed + (steeringAmplitude * percent / 100.0)
+    pwm.set_pwm(steering, 0, pulse)
 
 def straighten():
     pwm.set_pwm(steering, 0, steeringMed)
 
 def turnInPlace(degree):
     #TODO: use an N-point turn to move this much
-    return
+    pass
