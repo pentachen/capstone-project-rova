@@ -121,6 +121,7 @@ for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=
 	# grab the raw NumPy array representing the image, then initialize the timestamp
 	# and occupied/unoccupied text
 	image = frame.array
+	print curr_state
 
 	if curr_state == states[0]:
 
@@ -137,7 +138,7 @@ for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=
 	elif curr_state == states[1]:
 
 		# Turn left takes in an angle
-		car.turnLeft(data["angle"])
+		# car.turnLeft(data["angle"])
 		state_changed = True
 
 		if not data["ball_found"]:
@@ -181,7 +182,8 @@ for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=
 		pickup()
 		t_end = time.time() + 65
 		while time.time() < t_end:
-			car.accel(30)
+			# car.accel(30)
+			pass
 		state_changed = True
 		curr_state = states[4]
 
