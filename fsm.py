@@ -27,9 +27,9 @@ angleView = 160
 
 # initialize the camera and grab a reference to the raw camera capture
 camera = PiCamera()
-camera.resolution = (256, 144)
-camera.framerate = 5
-rawCapture = PiRGBArray(camera, size=(256, 144))
+camera.resolution = (640, 480)
+camera.framerate = 10
+rawCapture = PiRGBArray(camera, size=(640, 480))
 
 # allow the camera to warmup
 time.sleep(0.1)
@@ -138,6 +138,11 @@ for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=
 
 		# Turn left takes in an angle
 		# car.turnLeft(data["angle"])
+		car.turnLeft(100)
+		car.accel(50)
+		time.sleep(2)
+		car.stop()
+		car.straighten()
 		state_changed = True
 
 		if not data["ball_found"]:
@@ -160,6 +165,8 @@ for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=
 			curr_state = states[3]
 		else:
 			state_changed = False
+			print "driving forward"
+			car.accel(50)
 			center = data["ball_center"]
 			# draw the circle and centroid on the image,
 			# then update the list of tracked points
@@ -172,7 +179,7 @@ for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=
 		pickup()
 		t_end = time.time() + 65
 		while time.time() < t_end:
-			# car.accel(30)
+			car.accel(25)
 			pass
 		state_changed = True
 		curr_state = states[4]
@@ -180,9 +187,6 @@ for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=
 	elif curr_state == states[4]:
 		print "Done doing things"
 		break
-
-			
-            	cv2.putText(image, "Tracking failure detected", (100,80), cv2.FONT_HERSHEY_SIMPLEX, 0.75,(0,0,255),2)
 	
 
 	# show the image to our screen
