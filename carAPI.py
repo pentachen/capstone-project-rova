@@ -6,7 +6,6 @@
 # The steering servo on our car seems to be miscalibrated.  We introduce
 # an offset to compensate its urge to turn right.
 
-from __future__ import division
 import time
 import Adafruit_PCA9685
 
@@ -19,18 +18,22 @@ steering = 15
 
 # Configure min and max pulse lengths, out of 4096
 base = 4096 / 20
-#throttleMin = base
-throttleMed = base * 1.5
-#throttleMax = base * 2
+throttleAmp = base/2 
+throttleMed = 307   # (4096 / 20) * 1.5
 
 offset = 29
-steeringAmplitude = 70
-steeringMed = base * 1.5 + offset
-#steeringMin = steeringMed - steeringAmplitude
-#steeringMax = steeringMed + steeringAmplitude
+steeringAmp = 70
+steeringMed = 307 + offset
+#steeringMin = steeringMed - steeringAmp (right)
+#steeringMax = steeringMed + steeringAmp (left)
 
 # Arm the ESC and set frequency to 50Hz
 def initialize():
+    print throttleMed
+    print throttle
+    print steeringMed
+    print steering
+
     pwm.set_pwm_freq(50) 
     pwm.set_pwm(throttle, 0, throttleMed)
     pwm.set_pwm(steering, 0, steeringMed)
@@ -42,7 +45,7 @@ def accel(percent):
     elif (percent > 100):
         percent = 100
 
-    pulse = throttleMed + (base * percent / 100.0)
+    pulse = throttleMed + (throttleAmp * percent / 100)
     pwm.set_pwm(throttle, 0, pulse)
 
 def reverse(percent):
@@ -51,7 +54,7 @@ def reverse(percent):
     elif (percent > 100):
         percent = 100
 
-    pulse = throttleMed - (base * percent / 100.0)
+    pulse = throttleMed - (throttleAmp * percent / 100)
     pwm.set_pwm(throttle, 0, pulse)
 
 def stop():
@@ -64,7 +67,7 @@ def turnRight(percent):
     elif (percent > 100):
         percent = 100
 
-    pulse = steeringMed - (steeringAmplitude * percent / 100.0)
+    pulse = steeringMed - (steeringAmp * percent / 100)
     pwm.set_pwm(steering, 0, pulse)
 
 def turnLeft(percent):
@@ -73,7 +76,7 @@ def turnLeft(percent):
     elif (percent > 100):
         percent = 100
 
-    pulse = steeringMed + (steeringAmplitude * percent / 100.0)
+    pulse = steeringMed + (steeringAmp * percent / 100)
     pwm.set_pwm(steering, 0, pulse)
 
 def straighten():
