@@ -112,6 +112,8 @@ else:
 state_changed = False
 curr_state = states[0]
 
+car.initialize()
+
 # keep looping
 for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=True):
 	# grab the raw NumPy array representing the image, then initialize the timestamp
