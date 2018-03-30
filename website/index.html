@@ -25,7 +25,7 @@ crossorigin="anonymous"></script>
       <div class="header clearfix">
         <nav>
           <ul class="nav nav-pills pull-right">
-            <li role="presentation"><a href="videos.html">videos</a></li>
+            <li role="presentation"><a href="videos.html">media</a></li>
           </ul>
         </nav>
         <h3 class="text-muted">r o v a</h3>
@@ -34,20 +34,20 @@ crossorigin="anonymous"></script>
 
       <div class="jumbotron">
         <div class="post-box leftalign">
-          <h2 class="smol centered"> 3/22/2018 </h2>
+          <h2 class="smol centered"> 3.29.2018 </h2>
           <p> benjami1 </p>
           <p class="smol">
-            I managed to arm the ESC using PWM signals from our Raspberry Pi.  I also spent a while debugging our car to figure out why the steering servo wasn't responding.  In the end, I was able to control the steering using PWM signals as well, but I still have no idea what went wrong previously.  I'll spend the next week writing an API for controlling the RC car.
+            I wrote an API for controlling the RC car and helped link it up to the FSM.  I tested the API and did calibrations for steering and throttle.  I also did more research in regards to our pick-up mechanism and battery upgrades.
           </p>
           <br>
           <p> rrpillai </p>
-          <p class="smol">
-            I wrote down the architecture for the finite state machine, which is the high level logic that our robot will use. The main states are looking for the ball, moving towards found balls, picking up found balls, looking for markers (which are placed at the corners of the half court) if the ball isn't found and moving to the markers. For next week, I plan to test this FSM once the movement API has been implemented and will hopefully have a demo of the car finding a ball and moving to it.
+          <p class="smol">            
+            I tested the FSM on the RC car and then spent some time debugging it.  We were able to get the car to properly switch states and make rough movements.  For next week, I will be working on localization.
           </p>
           <br>
           <p> davidyu </p>
           <p class="smol">
-            I worked on the pickup mechanism for our tennis ball bot. I began by designing a blueprint for the mechanism through measurements of our RC car. I also researched and ordered the parts needed for the mechanism. From now through the weekend, I will be constructing a version of the mechanism and testing its capabilities.
+            This week, I've built a prototype for the pickup mechanism. I used strong cardboard, lightweight wood, and lots of glue to make a working prototype. I've tested this design by hand crank and regarding that, it seems to work. This coming week, I will need to work on attaching the motor to the mechanism and controlling the motor in the use of ball pick-up. In addition, I did research and testing on efficient movements of the RC car in regards to in-place turning, an important part of our car movement that we will implement soon.  
           </p>
         </div>
       </div>
@@ -56,6 +56,40 @@ crossorigin="anonymous"></script>
         <div class="col-lg-1"></div>
         <div class="col-lg-10">
           <div class="post-common">
+            <h1> benjami1 </h1>
+            <p class="smol">
+              I managed to arm the ESC using PWM signals from our Raspberry Pi.  I also spent a while debugging our car to figure out why the steering servo wasn't responding.  In the end, I was able to control the steering using PWM signals as well, but I still have no idea what went wrong previously.  I'll spend the next week writing an API for controlling the RC car.
+            </p>
+            
+            <h1> rrpillai </h1>           
+            <p class="smol">
+              I wrote down the architecture for the finite state machine, which is the high level logic that our robot will use. The main states are looking for the ball, moving towards found balls, picking up found balls, looking for markers (which are placed at the corners of the half court) if the ball isn't found and moving to the markers. For next week, I plan to test this FSM once the movement API has been implemented and will hopefully have a demo of the car finding a ball and moving to it.
+            </p>
+            
+            <h1> davidyu </h1>           
+            <p class="smol">
+              I worked on the pickup mechanism for our tennis ball bot. I began by designing a blueprint for the mechanism through measurements of our RC car. I also researched and ordered the parts needed for the mechanism. From now through the weekend, I will be constructing a version of the mechanism and testing its capabilities.
+            </p>
+            
+            <table>
+              <tr>
+                <td>#3</td>
+                <td> | </td>
+                <td>back to work</td>
+                <td> | </td>
+                <td>3.22.2018</td>
+              </tr>
+            </table>
+          </div> 
+        </div>
+        <div class="col-lg-1"></div>
+      </div>
+       
+      <div class="row marketing">
+        <div class="col-lg-1"></div>
+        <div class="col-lg-10">
+          <div class="post-common">
+            <br>
             <p class="smol">we went to spain</p>
             
             <table>
@@ -67,8 +101,7 @@ crossorigin="anonymous"></script>
                 <td>3.15.2018</td>
               </tr>
             </table>
-          </div> 
-<!--          <h4 class="center-text">no previous updates</h4>-->
+          </div>
         </div>
         <div class="col-lg-1"></div>
       </div>
@@ -77,7 +110,7 @@ crossorigin="anonymous"></script>
         <div class="col-lg-1"></div>
         <div class="col-lg-10">
           <div class="post-common">
-            <h1> benjami1 </h1>           
+            <h1> benjami1 </h1>
             <p class="smol">
               I set up this website and worked on communication between the Raspberry Pi and our RC car.  David and I brought the car to lab to verify what PWM signals were being sent in an effort to figure out how to arm the ESC and why the steering servo was unresponsive.  I wrote a small test script to control the RC car's throttle after using the remote control to arm the ESC.  I wrote some sections of our design document.
             </p>
