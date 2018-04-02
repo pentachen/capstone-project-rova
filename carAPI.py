@@ -91,6 +91,16 @@ def turnLeft(percent):
     pulse = steeringMed + (steeringAmp * percent / 100)
     pwm.set_pwm(steering, 0, pulse)
 
+# takes in a number from -80 to 80
+def turnAngle(angle):
+    if (angle < -80):
+        angle = -80
+    elif (angle > 80):
+        angle = 80
+
+    pulse = steeringMed - (steeringAmp * angle / 80)
+    pwm.set_pwm(steering, 0, pulse)
+
 def straighten():
     pwm.set_pwm(steering, 0, steeringMed)
 
