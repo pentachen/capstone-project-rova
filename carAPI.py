@@ -48,6 +48,13 @@ def accel(percent):
     pulse = throttleMed + (throttleAmp * percent / 100)
     pwm.set_pwm(throttle, 0, pulse)
 
+def accelT(percent, seconds):
+    accel(percent)
+    time.sleep(seconds)
+    stop()
+    reverseT(30, 0.3) # won't reverse on next command unless there's one of these here.
+    stop()
+
 def reverse(percent):
     if (percent < 0):
         percent = 0
@@ -56,6 +63,11 @@ def reverse(percent):
 
     pulse = throttleMed - (throttleAmp * percent / 100)
     pwm.set_pwm(throttle, 0, pulse)
+
+def reverseT(percent, seconds):
+    reverse(percent)
+    time.sleep(seconds)
+    stop()
 
 def stop():
     pwm.set_pwm(throttle, 0, throttleMed)
