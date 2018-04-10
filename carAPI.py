@@ -105,23 +105,27 @@ def straighten():
     pwm.set_pwm(steering, 0, steeringMed)
 
 #TODO: MULTITHREAD
-def turnInPlace(degree):
-    #left
-    accel(100)
-    time.sleep(0.4)
-    stop()
-    time.sleep(0.1)
+def turnInPlace(angle):
+    # if (angle < 0):
+    #     turnLeft(angle)
+    #     accelT(100, 0.2)
+    #     reverseT(100, 0.2)
+        
+    # accel(100)
+    # time.sleep(0.4)
+    # stop()
+    # time.sleep(0.1)
 
-    turnRight(100)
-    reverse(100)
-    time.sleep(0.8)
-    stop()
-    time.sleep(0.1)
+    # turnRight(100)
+    # reverse(100)
+    # time.sleep(0.8)
+    # stop()
+    # time.sleep(0.1)
 
-    turnLeft(100)
-    accel(100)
-    time.sleep(0.4)
-    stop()
-    time.sleep(0.1)
+    # turnLeft(100)
+    # accel(100)
+    # time.sleep(0.4)
+    # stop()
+    # time.sleep(0.1)
 
     pass
