@@ -24,6 +24,7 @@ markers = {0: "RED", 1: "BLUE", 2: "BLACK", 3: "WHITE"}
 
 # Total angle view given by fisheye
 angleView = 160 
+defaultRotate = 90
 
 # initialize the camera and grab a reference to the raw camera capture
 camera = PiCamera()
@@ -105,7 +106,7 @@ def look_for_marker(image, marker_num)
 
 markers = ["BLACK", "WHITE", "RED", "BLUE"]
 states = ["LOOK FOR BALL", "ROTATE TO LOOK", "MOVE", "PICKUP", "DONE", "LOOK FOR MARKER"]
-data = {"angle": 0, "found": False, "is_ball": False "num_rot": 0, "ball_center": (-1,-1), "ball_radius": -1, "curr_marker": -1, }
+data = {"angle": 0, "found": False, "is_ball": False "num_rot": 0, "ball_center": (-1,-1), "ball_radius": -1, "curr_marker": -1, "count": 0}
 
 (major_ver, minor_ver, subminor_ver) = (cv2.__version__).split('.')
 tracker = None
@@ -128,53 +129,55 @@ for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=
 	# LOOK FOR BALL
 	if curr_state == states[0]:
 
-		found = False
-		for i in xrange(1000):
-			data["angle"], found, data["ball_center"] = look_for_balls(image)
-			data["found"] = data["found"] or found
-			if found:
-				break
+		data["angle"], found, data["ball_center"] = look_for_balls(image)
+		data["found"] = data["found"] or found
 
+		data["count"] += 1
 
-		if not data["found"]:
-			data["angle"] = 90
-
-		state_changed = True
-		data["is_ball"] = True
-		curr_state = states[1]
+		if data["count"] == 10 or data["ball_found"] == True:
+			state_changed = True
+			data["count"] = 0
+			if not data["found"]:
+				data["angle"] = defaultRotate
+			data["is_ball"] = True
+			curr_state = states[1]
+		else:
+			state_changed = False
 
 	# LOOK FOR MARKER
 	elif curr_state == states[5]:
 
-		found = False
-		for i in xrange(1000):
-			data["angle"], found, _ = look_for_markers(image, data["curr_marker"])
-			data["found"] = data["found"] or found
-			if found:
-				break
+		data["angle"], found, _ = look_for_balls(image)
+		data["found"] = data["found"] or found
 
-		if not data["found"]:
-			data["angle"] = 90
+		data["count"] += 1
 
-		state_changed = True
-		data["is_ball"] = False
-		curr_state = states[1]
+		if data["count"] == 10 or data["found"] == True:
+			state_changed = True
+			data["count"] = 0
+			if not data["found"]:
+				data["angle"] = defaultRotate
+			data["is_ball"] = False
+			curr_state = states[1]
+		else:
+			state_changed = False
 
 			
 	# ROTATE TO ANGLE
 	elif curr_state == states[1]:
 
 		# Turn left takes in an angle
-		# car.turnLeft(data["angle"])
+		car.turnLeft(data["angle"])
 
-		# Change this to something that rotates to a specific angle
-		car.turnLeft(100)
-		car.accel(50)
+		# TODO: @Ben, Make above turnLeft work so that I don't have to call all this stuff
+		'''car.accel(50)
 		time.sleep(2)
 		car.stop()
-		car.straighten()
+		car.straighten()'''
 		state_changed = True
 
+		# If looking for ball and it's not found, rotate in place 
+		# till we hit 360, and then look for marker
 		if data["is_ball"] and not data["found"]:
 			data["num_rot"] += 1
 			if data["num_rot"] < 4:
@@ -183,11 +186,14 @@ for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=
 				data["curr_marker"] += 1
 				curr_state = states[5]
 
+		# If looking for ball and found, go towards it
 		elif data["is_ball"] and data["found"]:
 			data["num_rot"] = 0
 			data["curr_marker"] = -1
 			curr_state = states[2]
 
+		# If looking for marker and not found, turn in place till we back to
+		# same position. If none of the markers are found, give up
 		elif not data["is_ball"] and not data["found"]:
 			data["num_rot"] += 1
 			if data["num_rot"] < 4:
@@ -199,6 +205,7 @@ for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=
 				data["curr_marker"] += 1
 				curr_state = states[5]
 
+		# If marker found, go to it
 		elif not data["is_ball"] and data["found"]:
 			data["num_rot"] = 0
 			curr_state = states[2]
@@ -208,32 +215,30 @@ for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=
 	elif curr_state == states[2]:
 
 		if data["is_ball"]:
-			data["ball_center"], data["ball_radius"] = determine_closest_center(image, 15)
-			radius = data["ball_radius"]
-			bbox = (data["ball_center"][0]-radius/2, data["ball_center"][1]-radius/2, radius+10, radius+10)
-			if radius > 70:
+			data["ball_center"], data["ball_radius"], data["angle"] = determine_closest_center(image, 15)
+		
+			# DEBUG
+			print "Radius: ", data["ball_radius"]
+			print "Center: ", data["ball_center"]
+
+			if data["ball_radius"] > 25:
 				state_changed = True
 				curr_state = states[3]
 			else:
 				state_changed = False
 				print "driving forward"
-				car.accel(50)
-				center = data["ball_center"]
-				# draw the circle and centroid on the image,
-				# then update the list of tracked points
-				cv2.circle(image, (int(center[0]), int(center[1])), int(radius),
-					(0, 255, 255), 2)
-				cv2.circle(image, center, 5, (0, 0, 255), -1)
+				car.turnAngle(data["angle"])
+				car.accelT(35, 0.75)
 
 		else:
+
+			# TODO: Think of logic to move to marker, shouldn't be too hard
 			look_for_marker(image, data["curr_marker"]) 
 
+	# Pick up ball from here
 	elif curr_state == states[3]:
 		pickup()
-		t_end = time.time() + 65
-		while time.time() < t_end:
-			car.accel(25)
-			pass
+		car.accelT(30, 0.5)
 		state_changed = True
 		curr_state = states[4]
 
