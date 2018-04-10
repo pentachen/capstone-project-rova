@@ -27,9 +27,9 @@ angleView = 160
 
 # initialize the camera and grab a reference to the raw camera capture
 camera = PiCamera()
-camera.resolution = (640, 480)
+camera.resolution = (480, 360)
 camera.framerate = 10
-rawCapture = PiRGBArray(camera, size=(640, 480))
+rawCapture = PiRGBArray(camera, size=(480, 360))
 
 # allow the camera to warmup
 time.sleep(0.1)
@@ -90,7 +90,11 @@ def determine_closest_center(image, error):
 		if (abs(y - center[1]) < 20):
 			print "Probably the right ball"
 
-	return center, radius
+		height, width, _ = image.shape
+		img_center = width/2 
+		angle = (x - img_center)/float(img_center) * angleView/2
+
+	return center, radius, angle
 
 def look_for_marker(color):
 	# Returns angle and position
@@ -101,14 +105,8 @@ def pickup():
 	pass
 
 states = ["LOOK FOR BALL", "ROTATE TO LOOK", "MOVE", "PICKUP", "DONE"]
-data = {"angle": 0, "ball_found": False, "num_rot": 0, "ball_center": (-1,-1), "ball_radius": -1}
+data = {"angle": 0, "ball_found": False, "num_rot": 0, "ball_center": (-1,-1), "ball_radius": -1, "count": 0}
 
-(major_ver, minor_ver, subminor_ver) = (cv2.__version__).split('.')
-tracker = None
-if int(minor_ver) < 3:
-    tracker = cv2.Tracker_create('KCF')
-else:
-    tracker = cv2.TrackerKCF_create()
 state_changed = False
 curr_state = states[0]
 
@@ -123,16 +121,19 @@ for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=
 
 	if curr_state == states[0]:
 
-		data["angle"], data["ball_found"], data["ball_center"] = look_for_balls(image)
+		data["angle"], found, data["ball_center"] = look_for_balls(image)
+		data["ball_found"] = data["ball_found"] or found
 
-		print data["ball_found"]
+		data["count"] += 1
 
-		if not data["ball_found"]:
-			data["angle"] = angleView/2
-			time.sleep(2)
-
-		state_changed = True
-		curr_state = states[1]
+		if data["count"] == 10 or data["ball_found"] == True:
+			state_changed = True
+			if not data["ball_found"]:
+				curr_state = states[4]
+			else:
+				curr_state = states[2]
+		else:
+			state_changed = False
 
 			
 
@@ -140,9 +141,8 @@ for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=
 
 		# Turn left takes in an angle
 		# car.turnLeft(data["angle"])
-		car.turnLeft(100)
-		car.accel(50)
-		time.sleep(2)
+		car.turnAngle(100)
+		car.accelT(30, 0.5)
 		car.stop()
 		car.straighten()
 		state_changed = True
@@ -159,30 +159,27 @@ for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=
 
 
 	elif curr_state == states[2]:
-		data["ball_center"], data["ball_radius"] = determine_closest_center(image, 15)
-		radius = data["ball_radius"]
-		bbox = (data["ball_center"][0]-radius/2, data["ball_center"][1]-radius/2, radius+10, radius+10)
-		if radius > 100:
+		data["ball_center"], data["ball_radius"], data["angle"] = determine_closest_center(image, 15)
+		
+		# DEBUG
+		print "Radius: ", data["ball_radius"]
+		print "Center: ", data["ball_center"]
+
+		if data["ball_radius"] > 25:
 			state_changed = True
 			curr_state = states[3]
 		else:
 			state_changed = False
 			print "driving forward"
-			car.accel(50)
-			center = data["ball_center"]
+			car.turnAngle(data["angle"])
+			car.accelT(35, 0.75)
 			# draw the circle and centroid on the image,
 			# then update the list of tracked points
-			cv2.circle(image, (int(center[0]), int(center[1])), int(radius),
-				(0, 255, 255), 2)
-			cv2.circle(image, center, 5, (0, 0, 255), -1)
 
 
 	elif curr_state == states[3]:
 		pickup()
-		t_end = time.time() + 65
-		while time.time() < t_end:
-			car.accel(25)
-			pass
+		car.accelT(30, 0.5)
 		state_changed = True
 		curr_state = states[4]
 
@@ -191,9 +188,9 @@ for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=
 		break
 	
 
-	# show the image to our screen
-	cv2.imshow("image", image)
-	key = cv2.waitKey(1) & 0xFF
+	# # show the image to our screen
+	# cv2.imshow("image", image)
+	# key = cv2.waitKey(1) & 0xFF
 
 	# clear the stream in preparation for the next frame
 	rawCapture.truncate(0)
