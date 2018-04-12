@@ -5,6 +5,9 @@
 #
 # The steering servo on our car seems to be miscalibrated.  We introduce
 # an offset to compensate its urge to turn right.
+#
+# The throttle is also miscalibrated.  Adding a small offset seems to
+# even things out between reversing and accelerating.
 
 import time
 import Adafruit_PCA9685
@@ -18,8 +21,9 @@ steering = 15
 
 # Configure min and max pulse lengths, out of 4096
 base = 4096 / 20
+offset = 4
 throttleAmp = base/2 
-throttleMed = 307   # (4096 / 20) * 1.5
+throttleMed = 307 + offset   # (4096 / 20) * 1.5
 
 offset = 29
 steeringAmp = 70
@@ -71,6 +75,10 @@ def reverseT(percent, seconds):
 
 def stop():
     pwm.set_pwm(throttle, 0, throttleMed)
+
+def stopT(seconds):
+    pwm.set_pwm(throttle, 0, throttleMed)
+    time.sleep(seconds)
 
 # FSM uses angle, 0 to 80 degrees?
 def turnRight(percent):
@@ -129,3 +137,18 @@ def turnInPlace(angle):
     # time.sleep(0.1)
 
     pass
+
+def testInPlace(speed, movetime, braketime, turntime):
+    turnLeft(100)
+    accelT(speed, movetime)
+    time.sleep(braketime)
+
+    turnRight(100)
+    reverseT(speed, movetime * 2)
+    time.sleep(braketime)
+
+    turnLeft(100)
+    accelT(speed, movetime * 1.25)
+    time.sleep(braketime)
+
+    straighten()
