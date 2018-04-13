@@ -99,7 +99,7 @@ def look_for_marker(color):
 	return 0, False
 
 def pickup():
-	pass
+	print "PICKING UP BALL"
 
 def look_for_marker(image, marker_num)
 
@@ -132,9 +132,11 @@ for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=
 		data["angle"], found, data["ball_center"] = look_for_balls(image)
 		data["found"] = data["found"] or found
 
+		print data["found"]
+
 		data["count"] += 1
 
-		if data["count"] == 10 or data["ball_found"] == True:
+		if data["count"] == 10 or data["found"] == True:
 			state_changed = True
 			data["count"] = 0
 			if not data["found"]:
@@ -167,13 +169,10 @@ for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=
 	elif curr_state == states[1]:
 
 		# Turn left takes in an angle
-		car.turnLeft(data["angle"])
+		# car.turnLeft(data["angle"])
+		print "Angle: ", data["angle"]
+		car.turnLeft90()
 
-		# TODO: @Ben, Make above turnLeft work so that I don't have to call all this stuff
-		'''car.accel(50)
-		time.sleep(2)
-		car.stop()
-		car.straighten()'''
 		state_changed = True
 
 		# If looking for ball and it's not found, rotate in place 
@@ -227,8 +226,8 @@ for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=
 			else:
 				state_changed = False
 				print "driving forward"
-				car.turnAngle(data["angle"])
-				car.accelT(35, 0.75)
+				car.turnAngle(data["angle"]) # maybe x2 or another multiplier
+				car.accel(30)
 
 		else:
 

@@ -21,7 +21,7 @@ steering = 15
 
 # Configure min and max pulse lengths, out of 4096
 base = 4096 / 20
-offset = 4
+offset = -1
 throttleAmp = base/2 
 throttleMed = 307 + offset   # (4096 / 20) * 1.5
 
@@ -56,7 +56,7 @@ def accelT(percent, seconds):
     accel(percent)
     time.sleep(seconds)
     stop()
-    reverseT(30, 0.3) # won't reverse on next command unless there's one of these here.
+    reverseT(30, 0.1) # won't reverse on next command unless there's one of these here.
     stop()
 
 def reverse(percent):
@@ -112,43 +112,35 @@ def turnAngle(angle):
 def straighten():
     pwm.set_pwm(steering, 0, steeringMed)
 
-#TODO: MULTITHREAD
-def turnInPlace(angle):
-    # if (angle < 0):
-    #     turnLeft(angle)
-    #     accelT(100, 0.2)
-    #     reverseT(100, 0.2)
-        
-    # accel(100)
-    # time.sleep(0.4)
-    # stop()
-    # time.sleep(0.1)
+def turnLeft90():
+    turnInPlace(50, 0.25, 0.1, 0.4)
 
-    # turnRight(100)
-    # reverse(100)
-    # time.sleep(0.8)
-    # stop()
-    # time.sleep(0.1)
-
-    # turnLeft(100)
-    # accel(100)
-    # time.sleep(0.4)
-    # stop()
-    # time.sleep(0.1)
-
-    pass
-
-def testInPlace(speed, movetime, braketime, turntime):
+# Rotates 90 degrees counterclockwise
+def turnInPlace(speed, movetime, braketime, turntime):
     turnLeft(100)
-    accelT(speed, movetime)
+    time.sleep(turntime)
+    accelT(speed, movetime * 1.2)
     time.sleep(braketime)
+    reverseT(50, 0.1) #brake
 
     turnRight(100)
-    reverseT(speed, movetime * 2)
+    time.sleep(turntime)
+    reverseT(speed, movetime * 1.65)
     time.sleep(braketime)
-
+    accelT(100, 0.133333) #brake
+    
     turnLeft(100)
-    accelT(speed, movetime * 1.25)
+    time.sleep(turntime)
+    accelT(speed, movetime * 1.4)
     time.sleep(braketime)
+    reverseT(70, 0.1) #brake
 
     straighten()
+    time.sleep(turntime)
+    reverseT(speed, movetime * 1.3)
+    time.sleep(braketime)
+    accelT(100, 0.1)    
+
+# 50, 0.25, 0.1, 0.4 is not bad
+
+# import carAPI as c
