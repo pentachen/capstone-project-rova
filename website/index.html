@@ -34,22 +34,55 @@ crossorigin="anonymous"></script>
 
       <div class="jumbotron">
         <div class="post-box leftalign">
-          <h2 class="smol centered"> 4.5.2018 </h2>
+          <h2 class="smol centered"> 4.12.2018 </h2>
           <p> benjami1 </p>
           <p class="smol">
-            I moved our hardware onto the RC car and made the platform fully mobile using a temporary cardboard-and-chopstick setup.  I also added more features to the car API.  I forgot to add credentials for a mobile hotspot or the CMU-SECURE network, though, so our demo was unable to do anything.
+            I worked on multi-threading car movement and in-place-turning this week. These two components are important because the previous single-threaded nature of our car movement caused difficulties with it's use of time.sleep, which blocked video streaming and subsequent CV along with the FSM. In addition, in-place-turning greatly helps out the FSM in allowing the car to orient itself so that the ball is centered in the camera. Because the turning radius of the car is rather large, it is otherwise difficult for the car to approach balls at the edge of its vision. This allows for it to rotate while staying within a 2ft radius circle.
           </p>
           <br>
           <p> rrpillai </p>
           <p class="smol">
-            I wrote some extra features that were more relevant to our demo on a different branch of our FSM code using an older commit. I also looked into different localization algorithms and existing code online that our car could use. For next week, I'll continue working on localization and will hopefully succeed at having the car localize.
+            This week, I implemented a method that calculates not just angle but also distance of a detected object from the car. This will help us in our localization. Along with Ben I also incorporated the in place turning into the FSM so that the car can accurately turn to face the ball head on. We also determined that we would need tall markers to localize and thus plan to use different colored rods at the 4 corners of the court. Once we set up these markers, we will be able to test a complete cycle of the FSM.
           </p>
           <br>
           <p> davidyu </p>
           <p class="smol">
-            This week I continued to work on the pickup mechanism by testing and using electric motors. I figured out how to use our Raspberry Pi to speed control the motor, and also worked on attaching the motor to the pickup mechanism. This week I will continue to work on the pickup mechanism and play with gears/pinions to make the mechanism work even better
+            This week, I mainly worked on the pickup mechanism, this time with the bigger and stronger motor. Using an ESC (electric speed control), I tuned and tested the pickup mechanism to work with what we needed. However, while during our test, we unfortunately cooked the motor due to unfortunate circumstances, so was halted in progress on that. After much research, I have ordered new parts, which should fix our previous issues and help provide a more stable and solid pickup ability. In addition, I worked with Ben in calibrating and testing the in-place turn movement of the car while searching for a ball.
           </p>
         </div>
+      </div>
+
+      <div class="row marketing">
+        <div class="col-lg-1"></div>
+        <div class="col-lg-10">
+          <div class="post-common">
+            <h1> benjami1 </h1>
+            <p class="smol">
+              I moved our hardware onto the RC car and made the platform fully mobile using a temporary cardboard-and-chopstick setup.  I also added more features to the car API.  I forgot to add credentials for a mobile hotspot or the CMU-SECURE network, though, so our demo was unable to do anything.
+            </p>
+            
+            <h1> rrpillai </h1>           
+            <p class="smol">
+              I wrote some extra features that were more relevant to our demo on a different branch of our FSM code using an older commit. I also looked into different localization algorithms and existing code online that our car could use. For next week, I'll continue working on localization and will hopefully succeed at having the car localize.
+            </p>
+            
+            <h1> davidyu </h1>           
+            <p class="smol">
+              This week I continued to work on the pickup mechanism by testing and using electric motors. I figured out how to use our Raspberry Pi to speed control the motor, and also worked on attaching the motor to the pickup mechanism. This week I will continue to work on the pickup mechanism and play with gears/pinions to make the mechanism work even better
+            </p>
+            
+            <table>
+              <tr>
+                <td>#5</td>
+                <td> | </td>
+                <td>more stuff</td>
+                <td> | </td>
+                <td>4.5.2018</td>
+              </tr>
+            </table>
+          </div> 
+        </div>
+        <div class="col-lg-1"></div>
       </div>
 
       <div class="row marketing">
