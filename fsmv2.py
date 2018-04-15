@@ -19,6 +19,9 @@ import carAPI as car
 greenLower = (29, 86, 6)
 greenUpper = (64, 255, 255)
 
+#greenLower = (25, 159, 125)
+#greenUpper = (64. 255, 255)
+
 marker_ranges = {"RED": [(), ()], "BLUE": [(), ()], "BLACK": [(), ()], "WHITE": [(), ()]}
 markers = {0: "RED", 1: "BLUE", 2: "BLACK", 3: "WHITE"}
 

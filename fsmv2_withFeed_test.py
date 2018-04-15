@@ -16,8 +16,11 @@ import carAPI as car
 # define the lower and upper boundaries of the "green"
 # ball in the HSV color space, then initialize the
 # list of tracked points
-greenLower = (29, 86, 6)
-greenUpper = (64, 255, 255)
+# greenLower = (29, 86, 6)
+# greenUpper = (64, 255, 255)
+
+greenLower = (25, 133, 125)
+greenUpper = (64. 255, 255)
 
 marker_ranges = {"RED": [(), ()], "BLUE": [(), ()], "BLACK": [(), ()], "WHITE": [(), ()]}
 markers = {0: "RED", 1: "BLUE", 2: "BLACK", 3: "WHITE"}

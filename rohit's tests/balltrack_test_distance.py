@@ -1,8 +1,3 @@
-# USAGE
-# python ball_tracking.py --video ball_tracking_example.mp4
-# python ball_tracking.py
-
-# import the necessary packages
 from picamera.array import PiRGBArray
 from picamera import PiCamera
 from collections import deque
@@ -24,6 +19,8 @@ servoMax = 409
 # list of tracked points
 greenLower = (29, 86, 6)
 greenUpper = (64, 255, 255)
+
+# distance calc stuff
 D = 3 # ball was kept 3 inches away from camera
 P = 101 # width in pixels at 3 inches away
 actualRadius = 2.6 # radius of ball in inches
