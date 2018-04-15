@@ -77,7 +77,6 @@ for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=
 		# only proceed if the radius meets a minimum size
 		if radius > 10:
 			# draw the circle and centroid on the image,
-			# then update the list of tracked points
 			cv2.circle(image, (int(x), int(y)), int(radius), (0, 255, 255), 2)
 			cv2.circle(image, center, 5, (0, 0, 255), -1)
 		
