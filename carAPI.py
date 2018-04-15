@@ -115,6 +115,9 @@ def straighten():
 def turnLeft90():
     turnInPlace(50, 0.25, 0.1, 0.4)
 
+def turnLeft45():
+    turnInPlace(50, 0.185, 0.1, 0.3)
+
 # Rotates 90 degrees counterclockwise
 def turnInPlace(speed, movetime, braketime, turntime):
     turnLeft(100)

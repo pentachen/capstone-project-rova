@@ -28,9 +28,9 @@ defaultRotate = 90
 
 # initialize the camera and grab a reference to the raw camera capture
 camera = PiCamera()
-camera.resolution = (640, 480)
+camera.resolution = (480, 360)
 camera.framerate = 10
-rawCapture = PiRGBArray(camera, size=(640, 480))
+rawCapture = PiRGBArray(camera, size=(480, 360))
 
 # allow the camera to warmup
 time.sleep(0.1)
@@ -81,6 +81,7 @@ def determine_closest_center(image, error):
 	height, width, _ = image.shape
 	center = (-1,-1)
 	radius = -1
+	angle = -1
 
 	if len(cnts) > 0:
 		# assume that largest contour is the closest ball
@@ -91,7 +92,11 @@ def determine_closest_center(image, error):
 		if (abs(y - center[1]) < 20):
 			print "Probably the right ball"
 
-	return center, radius
+		height, width, _ = image.shape
+		c = width/2 
+		angle = (x - c)/float(c) * angleView/2
+
+	return center, radius, angle
 
 def look_for_marker(color):
 	# Returns angle and position
@@ -101,12 +106,13 @@ def look_for_marker(color):
 def pickup():
 	print "PICKING UP BALL"
 
-def look_for_marker(image, marker_num)
+def look_for_marker(image, marker_num):
+	pass
 
 
 markers = ["BLACK", "WHITE", "RED", "BLUE"]
 states = ["LOOK FOR BALL", "ROTATE TO LOOK", "MOVE", "PICKUP", "DONE", "LOOK FOR MARKER"]
-data = {"angle": 0, "found": False, "is_ball": False "num_rot": 0, "ball_center": (-1,-1), "ball_radius": -1, "curr_marker": -1, "count": 0}
+data = {"angle": 0, "found": False, "is_ball": False, "num_rot": 0, "ball_center": (-1,-1), "ball_radius": -1, "curr_marker": -1, "count": 0}
 
 (major_ver, minor_ver, subminor_ver) = (cv2.__version__).split('.')
 tracker = None
@@ -171,7 +177,7 @@ for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=
 		# Turn left takes in an angle
 		# car.turnLeft(data["angle"])
 		print "Angle: ", data["angle"]
-		car.turnLeft90()
+		car.turnLeft45()
 
 		state_changed = True
 
@@ -219,6 +225,7 @@ for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=
 			# DEBUG
 			print "Radius: ", data["ball_radius"]
 			print "Center: ", data["ball_center"]
+			print "Angle: ", data["angle"]
 
 			if data["ball_radius"] > 25:
 				state_changed = True
@@ -226,10 +233,11 @@ for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=
 			else:
 				state_changed = False
 				print "driving forward"
-				car.turnAngle(data["angle"]) # maybe x2 or another multiplier
+				car.turnAngle(data["angle"] * 3) # maybe x2 or another multiplier
 				car.accel(30)
 
 		else:
+
 
 			# TODO: Think of logic to move to marker, shouldn't be too hard
 			look_for_marker(image, data["curr_marker"]) 
@@ -237,7 +245,7 @@ for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=
 	# Pick up ball from here
 	elif curr_state == states[3]:
 		pickup()
-		car.accelT(30, 0.5)
+		car.accelT(30, 1.2)
 		state_changed = True
 		curr_state = states[4]
 
@@ -248,12 +256,12 @@ for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=
 	
 
 	# show the image to our screen
-	cv2.imshow("image", image)
-	key = cv2.waitKey(1) & 0xFF
+	# cv2.imshow("image", image)
+	# key = cv2.waitKey(1) & 0xFF
 
 	# clear the stream in preparation for the next frame
 	rawCapture.truncate(0)
 
 # cleanup the camera and close any open windows
 camera.release()
-cv2.destroyAllWindows()
+# cv2.destroyAllWindows()
