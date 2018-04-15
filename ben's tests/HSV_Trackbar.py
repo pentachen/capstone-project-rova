@@ -1,10 +1,20 @@
+from picamera.array import PiRGBArray
+from picamera import PiCamera
+
 import cv2
 import numpy as np
+
 #optional argument
 def nothing(x):
     pass
 cap = cv2.VideoCapture(0)
 cv2.namedWindow('image')
+
+# initialize the camera and grab a reference to the raw camera capture
+camera = PiCamera()
+camera.resolution = (480, 360)
+camera.framerate = 10
+rawCapture = PiRGBArray(camera, size=(480, 360))
 
 #easy assigments
 hh='Hue High'
@@ -21,11 +31,14 @@ cv2.createTrackbar(sh, 'image',0,255,nothing)
 cv2.createTrackbar(vl, 'image',0,255,nothing)
 cv2.createTrackbar(vh, 'image',0,255,nothing)
 
-while(1):
-    _,frame=cap.read()
-    frame=cv2.GaussianBlur(frame,(5,5),0)
+for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=True):
+
+    image = frame.array
+
+    # blurred = cv2.GaussianBlur(image, (11, 11), 0)
     #convert to HSV from BGR
-    hsv=cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
+
+    hsv = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
 
 
     #read trackbar positions for all
@@ -41,13 +54,21 @@ while(1):
 
     #apply the range on a mask
     mask = cv2.inRange(hsv,HSVLOW, HSVHIGH)
-    res = cv2.bitwise_and(frame,frame, mask =mask)
+    res = cv2.bitwise_and(image, image, mask = mask)
 
+    # show the image to our screen
     cv2.imshow('image', res)
-    cv2.imshow('yay', frame)
-    k = cv2.waitKey(5) & 0xFF
-    if k == 27:
+    cv2.imshow('yay', image)
+    # cv2.imshow("image", image)
+
+    key = cv2.waitKey(1) & 0xFF
+
+    # clear the stream in preparation for the next frame
+    rawCapture.truncate(0)
+
+    # if the 'q' key is pressed, stop the loop
+    if key == ord("q"):
         break
 
-
+camera.release()
 cv2.destroyAllWindows()
