@@ -1,0 +1,11 @@
+Blue low:  (92, 52, 0)
+Blue high: (119, 255, 167)
+
+Orange low:  (0, 157, 90)
+Orange high: (8, 255, 255)
+
+Cyan low:  (80, 101, 0)
+Cyan high: (91, 255, 255)
+
+Pink low:  (165, 113, 77)
+Pink high: (179, 255, 255)

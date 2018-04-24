@@ -113,13 +113,19 @@ def straighten():
     pwm.set_pwm(steering, 0, steeringMed)
 
 def turnLeft90():
-    turnInPlace(50, 0.25, 0.1, 0.4)
+    turnInPlaceLeft(50, 0.25, 0.1, 0.4)
 
 def turnLeft45():
-    turnInPlace(50, 0.185, 0.1, 0.3)
+    turnInPlaceLeft(50, 0.185, 0.1, 0.3)
+
+def turnRight90():
+    turnInPlaceRight(50, 0.25, 0.1, 0.4)
+
+def turnRight45():
+    turnInPlaceRight(50, 0.185, 0.1, 0.3)
 
 # Rotates 90 degrees counterclockwise
-def turnInPlace(speed, movetime, braketime, turntime):
+def turnInPlaceLeft(speed, movetime, braketime, turntime):
     turnLeft(100)
     time.sleep(turntime)
     accelT(speed, movetime * 1.2)
@@ -146,4 +152,27 @@ def turnInPlace(speed, movetime, braketime, turntime):
 
 # 50, 0.25, 0.1, 0.4 is not bad
 
-# import carAPI as c
+def turnInPlaceRight(speed, movetime, braketime, turntime):
+    turnRight(100)
+    time.sleep(turntime)
+    accelT(speed, movetime * 1.2)
+    time.sleep(braketime)
+    reverseT(50, 0.1) #brake
+
+    turnLeft(100)
+    time.sleep(turntime)
+    reverseT(speed, movetime * 1.65)
+    time.sleep(braketime)
+    accelT(100, 0.133333) #brake
+    
+    turnRight(100)
+    time.sleep(turntime)
+    accelT(speed, movetime * 1.4)
+    time.sleep(braketime)
+    reverseT(70, 0.1) #brake
+
+    straighten()
+    time.sleep(turntime)
+    reverseT(speed, movetime * 1.3)
+    time.sleep(braketime)
+    accelT(100, 0.1)    

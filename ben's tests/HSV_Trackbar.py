@@ -36,8 +36,7 @@ for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=
     image = frame.array
 
     # blurred = cv2.GaussianBlur(image, (11, 11), 0)
-    #convert to HSV from BGR
-
+    # hsv = cv2.cvtColor(blurred, cv2.COLOR_BGR2HSV)
     hsv = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
 
 
@@ -54,6 +53,8 @@ for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=
 
     #apply the range on a mask
     mask = cv2.inRange(hsv,HSVLOW, HSVHIGH)
+    # mask = cv2.erode(mask, None, iterations=2)
+    # mask = cv2.dilate(mask, None, iterations=2)
     res = cv2.bitwise_and(image, image, mask = mask)
 
     # show the image to our screen

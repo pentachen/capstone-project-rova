@@ -1,6 +1,5 @@
-# USAGE
-# python ball_tracking.py --video ball_tracking_example.mp4
-# python ball_tracking.py
+# TODO:
+# PORT _withFeed changes over
 
 # import the necessary packages
 from picamera.array import PiRGBArray
@@ -17,13 +16,9 @@ import carAPI as car
 # ball in the HSV color space, then initialize the
 # list of tracked points
 # greenLower = (29, 86, 6)
-# greenUpper = (64, 255, 255)
-
 greenLower = (25, 159, 125)
+# greenLower = (25, 130, 125)
 greenUpper = (64, 255, 255)
-minimumRadius = 5
-
-
 
 marker_ranges = {"RED": [(), ()], "BLUE": [(), ()], "BLACK": [(), ()], "WHITE": [(), ()]}
 markers = {0: "RED", 1: "BLUE", 2: "BLACK", 3: "WHITE"}
@@ -56,21 +51,6 @@ def find_centers(image):
 	# (x, y) center of the ball
 	cnts = cv2.findContours(mask.copy(), cv2.RETR_EXTERNAL,
 		cv2.CHAIN_APPROX_SIMPLE)[-2]
-
-	for element in cnts:
-	# draw the circle and centroid on the image,
-		((x, y), radius) = cv2.minEnclosingCircle(element)
-		M = cv2.moments(element)
-
-		center = (int(M["m10"] / M["m00"]), int(M["m01"] / M["m00"]))
-
-		# cv2.circle(image, (int(x), int(y)), int(radius), (0, 255, 255), 2)
-		# cv2.circle(image, center, 5, (0, 0, 255), -1)
-
-		if radius >= minimumRadius:
-			cv2.circle(image, (int(x), int(y)), int(radius), (0, 255, 255), 2)
-			cv2.circle(image, center, 5, (0, 0, 255), -1)
-
 	return cnts
 
 def look_for_balls(image):
@@ -87,8 +67,6 @@ def look_for_balls(image):
 		center = (int(M["m10"] / M["m00"]), int(M["m01"] / M["m00"]))
 
 		# only proceed if the radius meets a minimum size
-		if radius < minimumRadius:
-			return -1, False, (-1,-1)
 
 		# Add code to convert center to distance and angle somehow
 		height, width, _ = image.shape
@@ -128,6 +106,7 @@ def look_for_marker(color):
 
 def pickup():
 	print "PICKING UP BALL"
+	car.accelT(28, 0.8)
 
 def look_for_marker(image, marker_num):
 	pass
@@ -163,13 +142,6 @@ for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=
 
 		print data["found"]
 
-		# if data["found"]:
-		# 	data["ball_center"], data["ball_radius"], data["angle"] = determine_closest_center(image, 15)
-		# 	print "Radius: ", data["ball_radius"]
-		# 	print "Center: ", data["ball_center"]
-		# 	print "Angle: ", data["angle"]
-
-
 		data["count"] += 1
 
 		if data["count"] == 10 or data["found"] == True:
@@ -178,7 +150,7 @@ for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=
 			if not data["found"]:
 				data["angle"] = defaultRotate
 			data["is_ball"] = True
-			# curr_state = states[1]
+			curr_state = states[1]
 		else:
 			state_changed = False
 
@@ -268,7 +240,7 @@ for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=
 			else:
 				state_changed = False
 				print "driving forward"
-				car.turnAngle(data["angle"] * 3) # maybe x2 or another multiplier
+				car.turnAngle(int(data["angle"] * 3)) # maybe x2 or another multiplier
 				car.accel(30)
 
 		else:
@@ -280,7 +252,6 @@ for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=
 	# Pick up ball from here
 	elif curr_state == states[3]:
 		pickup()
-		car.accelT(30, 1.2)
 		state_changed = True
 		curr_state = states[4]
 
@@ -291,12 +262,12 @@ for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=
 	
 
 	# show the image to our screen
-	cv2.imshow("image", image)
-	key = cv2.waitKey(1) & 0xFF
+	# cv2.imshow("image", image)
+	# key = cv2.waitKey(1) & 0xFF
 
 	# clear the stream in preparation for the next frame
 	rawCapture.truncate(0)
 
 # cleanup the camera and close any open windows
 camera.release()
-cv2.destroyAllWindows()
+# cv2.destroyAllWindows()

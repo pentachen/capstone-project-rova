@@ -54,22 +54,22 @@ def find_centers(image):
 
 	# find contours in the mask and initialize the current
 	# (x, y) center of the ball
-	cnts = cv2.findContours(mask.copy(), cv2.RETR_EXTERNAL,
+	im2, cnts, hierarchy = cv2.findContours(mask.copy(), cv2.RETR_EXTERNAL,
 		cv2.CHAIN_APPROX_SIMPLE)[-2]
 
-	for element in cnts:
-	# draw the circle and centroid on the image,
-		((x, y), radius) = cv2.minEnclosingCircle(element)
-		M = cv2.moments(element)
+	# for element in cnts:
+	# # draw the circle and centroid on the image,
+	# 	((x, y), radius) = cv2.minEnclosingCircle(element)
+	# 	M = cv2.moments(element)
 
-		center = (int(M["m10"] / M["m00"]), int(M["m01"] / M["m00"]))
+	# 	center = (int(M["m10"] / M["m00"]), int(M["m01"] / M["m00"]))
 
-		# cv2.circle(image, (int(x), int(y)), int(radius), (0, 255, 255), 2)
-		# cv2.circle(image, center, 5, (0, 0, 255), -1)
+	# 	# cv2.circle(image, (int(x), int(y)), int(radius), (0, 255, 255), 2)
+	# 	# cv2.circle(image, center, 5, (0, 0, 255), -1)
 
-		if radius >= minimumRadius:
-			cv2.circle(image, (int(x), int(y)), int(radius), (0, 255, 255), 2)
-			cv2.circle(image, center, 5, (0, 0, 255), -1)
+	# 	if radius >= minimumRadius:
+	# 		cv2.circle(image, (int(x), int(y)), int(radius), (0, 255, 255), 2)
+	# 		cv2.circle(image, center, 5, (0, 0, 255), -1)
 
 	return cnts
 
@@ -163,13 +163,6 @@ for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=
 
 		print data["found"]
 
-		# if data["found"]:
-		# 	data["ball_center"], data["ball_radius"], data["angle"] = determine_closest_center(image, 15)
-		# 	print "Radius: ", data["ball_radius"]
-		# 	print "Center: ", data["ball_center"]
-		# 	print "Angle: ", data["angle"]
-
-
 		data["count"] += 1
 
 		if data["count"] == 10 or data["found"] == True:
@@ -204,15 +197,10 @@ for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=
 	# ROTATE TO ANGLE
 	elif curr_state == states[1]:
 
+		# Turn left takes in an angle
+		# car.turnLeft(data["angle"])
 		print "Angle: ", data["angle"]
-		if data["angle"] > 22 and data["angle"] < 67:
-			car.turnLeft45()
-		elif data["angle"] > 67:
-			car.turnLeft90()
-		elif data["angle"] < -22 and data["angle"] > -67:
-			car.turnRight45()
-		elif data["angle"] < -67:
-			car.turnRight90()
+		car.turnLeft45()
 
 		state_changed = True
 
