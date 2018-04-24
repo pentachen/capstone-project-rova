@@ -70,9 +70,8 @@ def find_centers(image, rangeLower, rangeUpper):
 
 	# find contours in the mask and initialize the current
 	# (x, y) center of the ball
-	# cv2.imshow("img", mask)
-	# key = cv2.waitKey(1) & 0xFF
-	
+	cv2.imshow("img", mask)
+	key = cv2.waitKey(1) & 0xFF
 	cnts = cv2.findContours(mask.copy(), cv2.RETR_EXTERNAL,
 		cv2.CHAIN_APPROX_SIMPLE)[-2]
 	return cnts
@@ -375,12 +374,12 @@ for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=
 	
 
 	# show the image to our screen
-	# cv2.imshow("image", image)
-	# key = cv2.waitKey(1) & 0xFF
+	cv2.imshow("image", image)
+	key = cv2.waitKey(1) & 0xFF
 
 	# clear the stream in preparation for the next frame
 	rawCapture.truncate(0)
 
 # cleanup the camera and close any open windows
 camera.release()
-# cv2.destroyAllWindows()
+cv2.destroyAllWindows()
