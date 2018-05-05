@@ -34,22 +34,88 @@ crossorigin="anonymous"></script>
 
       <div class="jumbotron">
         <div class="post-box leftalign">
-          <h2 class="smol centered"> carnival </h2>
+          <h2 class="smol centered"> 5.3.2018 </h2>
           <p> benjami1 </p>
           <p class="smol">
-            I worked on improving our robot's CV so that it can detect tennis balls in more lighting conditions and at a farther range.  I improved the thresholding, and Rohit and I also tested more variations of Hough transforms and contour detection.  I've also started making 3D models of our frame.
+            I made 3D-models for the ramp, spinning flapper, and ramp attachment.  These are all parts of the pickup mechanism.  David gave me input on the design and helped with the measurements.  Artur then printed out the models at CyLab.  I also worked on improving our ball detection, trying many different methods separately and together.  These included pyramid mean shift filtering (too expensive), Canny edge detection (shows promise), Hough circle transform (too picky), and many smoothening techniques involving convolutional filters and erosion/dilation.  I also assisted David with merging his pickup mechanism logic into the FSM.
           </p>
           <br>
           <p> rrpillai </p>
           <p class="smol">
-            This week, I worked with Ben on improving our car's CV.  I also improved the localization in the FSM and started creating the markers that we will use to localize with.
+            I continued to work on localization.  I also helped out Ben with his image segmentation experiments and continued to debug the FSM and catch edge cases.
           </p>
           <br>
           <p> davidyu </p>
           <p class="smol">
-            I worked on controlling our new motor and connecting it to our pick-up mechanism.  The new motor is still compatible with our ESC, which can still be controlled through PWM and our RPi.  The new motor is also strong  enough to move tennis balls up steep ramps without exploding.
+            This week I finished the pickup mechanism and attached it to the car. This included working on mounts and storage of the car. It now is fully functional and can pick up the balls successfully. In addition, I added control to the pickup mechanism as well so it runs only when needed when the car has run into the ball. I also minimized its blockage of the camera by returning the mechanism to the least invasive state after use. I will continue to test and optimize the pickup mechanism as well.
           </p>
         </div>
+      </div>
+
+      <div class="row marketing">
+        <div class="col-lg-1"></div>
+        <div class="col-lg-10">
+          <div class="post-common">
+            <h1> benjami1 </h1>
+            <p class="smol">
+            I finished modeling our vehicle's base frame.  It's modular to allow for further expansions later down the road, in case we need a rollcage or if we need to prototype pickup mechanism mounts.  I also made some basic localization markers and tuned our CV to detect them with Rohit while adding a few more movement commands to the car's API.  There was also a lot of testing being done, with some of it on my phone's mobile hotspot so we could demo our vehicle outside of my house's wifi range.
+            </p>
+            
+            <h1> rrpillai </h1>           
+            <p class="smol">
+            I worked on the localization even more and tuned the CV to detect the markers with Ben.  I also heavily tested and debugged the FSM and added even more stages to make it more robust.  I rewrote the localization stages to allow for marker detection in any order as opposed to a specific order, and I added distance detection for said localization markers.   
+            </p>
+            
+            <h1> davidyu </h1>           
+            <p class="smol">
+            This week I worked on setting up the pickup mechanism. Using gearmotors and a mixture of other parts, I have fashioned a workable pickup mechanism. It now can successfully pick up balls and place them into the container. All that is left is to mount it onto the car once our car mount is finished. That will be part of this weeks incoming tasks. I also helped in the continued testing of our car movement and ball vision.
+            </p>
+            
+            <table>
+              <tr>
+                <td>#8</td>
+                <td> | </td>
+                <td>we toil away</td>
+                <td> | </td>
+                <td>4.26.2018</td>
+              </tr>
+            </table>
+          </div> 
+        </div>
+        <div class="col-lg-1"></div>
+      </div>
+      
+      <div class="row marketing">
+        <div class="col-lg-1"></div>
+        <div class="col-lg-10">
+          <div class="post-common">
+            <h1> benjami1 </h1>
+            <p class="smol">
+            I worked on improving our robot's CV so that it can detect tennis balls in more lighting conditions and at a farther range.  I improved the thresholding, and Rohit and I also tested more variations of Hough transforms and contour detection.  I've also started making 3D models of our frame.
+            </p>
+            
+            <h1> rrpillai </h1>           
+            <p class="smol">
+            This week, I worked with Ben on improving our car's CV.  I also improved the localization in the FSM and started creating the markers that we will use to localize with.
+            </p>
+            
+            <h1> davidyu </h1>           
+            <p class="smol">
+            I worked on controlling our new motor and connecting it to our pick-up mechanism.  The new motor is still compatible with our ESC, which can still be controlled through PWM and our RPi.  The new motor is also strong  enough to move tennis balls up steep ramps without exploding.
+            </p>
+            
+            <table>
+              <tr>
+                <td>#7</td>
+                <td> | </td>
+                <td>carnival</td>
+                <td> | </td>
+                <td>4.19.2018</td>
+              </tr>
+            </table>
+          </div> 
+        </div>
+        <div class="col-lg-1"></div>
       </div>
 
       <div class="row marketing">
