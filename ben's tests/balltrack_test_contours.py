@@ -25,11 +25,19 @@ greenUpper = (64, 255, 255)
 
 pts = deque(maxlen=BUFFER_SIZE)
 
+# width = 960
+# height = 720
+# fps = 3
+
+width = 480
+height = 360
+fps = 8
+
 # initialize the camera and grab a reference to the raw camera capture
 camera = PiCamera()
-camera.resolution = (480, 360)
-camera.framerate = 10
-rawCapture = PiRGBArray(camera, size=(480, 360))
+camera.resolution = (width, height)
+camera.framerate = fps
+rawCapture = PiRGBArray(camera, size=(width, height))
 
 # allow the camera to warmup
 time.sleep(0.1)
@@ -61,6 +69,8 @@ for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=
 
 	# show the image to our screen
 	cv2.imshow("image", image3)
+	key = cv2.waitKey(1) & 0xFF
+	cv2.imshow("mask", mask)
 	key = cv2.waitKey(1) & 0xFF
 
 	# clear the stream in preparation for the next frame
