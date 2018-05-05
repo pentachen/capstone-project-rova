@@ -58,12 +58,20 @@ camera.resolution = (camWidth, camHeight)
 camera.framerate = 10
 rawCapture = PiRGBArray(camera, size=(camWidth, camHeight))
 
-# Pickup box dimensions
-pickupBoxHeight = 65
-pickupBoxWidth = 215
-pickupBoxLeft = (95, 140)
+
+# Pickup bounding box config (assuming 0,0 is top left)
+# pickupBoundingBoxWidth = 0.72 * camWidth 
+# pickupBoundingBoxHeight = 0.55 * camHeight
+# pickupBoundingBoxLeft = (camWidth - pickupBoundingBoxWidth) / 2
+# pickupBoundingBoxRight = (camWidth - pickupBoundingBoxWidth) / 2 + pickupBoundingBoxWidth
+# pickupBoundingBoxTop = (camHeight - pickupBoundingBoxHeight)
+# pickupBoundingBoxBottom = 0
+
+pickupBoxHeight = 50
+pickupBoxWidth = 100
+pickupBoxLeft = (180, 140)
 pickupBoxRight = (pickupBoxLeft[0]+pickupBoxWidth,
-		  camHeight)
+				  pickupBoxLeft[1]+pickupBoxHeight)
 
 
 # allow the camera to warmup
@@ -170,12 +178,12 @@ def look_for_balls(image):
 
 def determine_closest_center(image, error):
 	cnts = find_centers(image, greenLower, greenUpper)
+	print image.shape
 	height, width, _ = image.shape
 	center = (-1,-1)
 	radius = -1
 	angle = -999
 
-	print "Len of cnts is: ", len(cnts)
 	if len(cnts) > 0:
 		# assume that largest contour is the closest ball
 		c = max(cnts, key=cv2.contourArea)
@@ -335,19 +343,14 @@ for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=
 		if data["is_ball"]:
 			ball_center, radius, data["angle"] = determine_closest_center(image, 15)
 		
-			if radius != -1:
-				cv2.circle(image, ball_center, int(radius), (0,0,255))
+
 			# DEBUG
 			print "Radius: ", radius
 			print "Center: ", ball_center
 
-			center_x_in_box = ball_center[0] >= pickupBoxLeft[0] \
-							and ball_center[0] <= pickupBoxRight[0]
-							
-			center_y_in_box = ball_center[1] >= pickupBoxLeft[1] \
-							and ball_center[1] <= pickupBoxRight[1]
 
-			if center_x_in_box and center_y_in_box:
+
+			if radius > 25:
 				state_changed = True
 				curr_state = states[3]
 				data["found"] = False
@@ -360,6 +363,7 @@ for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=
 
 		else:
 
+			# TODO: Think of logic to move to marker, shouldn't be too hard
 			data["angle"], _, distance = look_for_marker(image, data["curr_marker"]) 
 			print "Distance of marker is: ", distance
 			if distance < 2:
@@ -376,9 +380,7 @@ for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=
 
 	# Pick up ball from here
 	elif curr_state == states[3]:
-		#pickup()
-		car.pickup(50)
-		#car.accelT(35, 0.75)
+		pickup()
 		state_changed = True
 		curr_state = states[0]
 
@@ -394,7 +396,7 @@ for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=
 	
 
 	# show the image to our screen
-	cv2.rectangle(image, pickupBoxLeft, pickupBoxRight, (0,0, 255))
+	cv2.rectangle(image, pickupBoundingBoxLeft)
 	cv2.imshow("image", image)
 	key = cv2.waitKey(1) & 0xFF
 

@@ -18,6 +18,7 @@ pwm = Adafruit_PCA9685.PCA9685()
 # Configure PCA9685 channels
 throttle = 0
 steering = 15
+pickupMech = 11
 
 # Configure min and max pulse lengths, out of 4096
 base = 4096 / 20
@@ -31,6 +32,8 @@ steeringMed = 307 + offset
 #steeringMin = steeringMed - steeringAmp (right)
 #steeringMax = steeringMed + steeringAmp (left)
 
+pickupOff = 307
+
 # Arm the ESC and set frequency to 50Hz
 def initialize():
     print throttleMed
@@ -41,7 +44,11 @@ def initialize():
     pwm.set_pwm_freq(50) 
     pwm.set_pwm(throttle, 0, throttleMed)
     pwm.set_pwm(steering, 0, steeringMed)
+    pwm.set_pwm(pickupMech, 0, pickupOff)
     time.sleep(1.5)
+
+def pickup(speed):
+    pwm.set_pwm(pickupMech, 0, pickupOff + speed)
 
 def accel(percent):
     if (percent < 0):

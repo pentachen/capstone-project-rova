@@ -17,28 +17,28 @@ import carAPI as car
 # ball in the HSV color space, then initialize the
 # list of tracked points
 # greenLower = (29, 86, 6)
-greenLower = (25, 159, 125)
+greenLower = (31, 150, 119)
 # greenLower = (25, 130, 125)
-greenUpper = (64, 255, 255)
+greenUpper = (69, 255, 255)
 
-D = 3 # ball was kept 3 inches away from camera
-P = 101 # width in pixels at 3 inches away
+cameraDist = 7.5
+D = 6.0 + cameraDist # ball was kept 3 inches away from camera
+P = 19.8 # width in pixels at 3 inches away
 actualRadius = 2.6 # radius of ball in inches
 focalLength = D*P/actualRadius
 
-D_marker = 17 # kept 17 inches away from camera
-P_marker = 223 # height in pixels
+D_marker = 12.0 + cameraDist # kept 12 inches away from camera
+P_marker = 196.0 # height in pixels
 actualHeight = 17 # in inches
 markerFocalLength = D_marker * P_marker/actualRadius
-
 
 num_markers = 4
 boxSize = 120
 markers = {0: "CYAN", 1: "BLUE", 2: "PINK", 3: "ORANGE"}
 marker_ranges = {	0: [(80, 101, 0), (91, 255, 255)],
-				 	1: [(92,52,0), (119,255,167)],
-				 	2: [(165, 113, 77), (179, 255, 255)],
-				 	3: [(0, 157, 90), (8, 255, 255)]	}
+					1: [(92,52,0), (119,255,167)],
+					2: [(165, 113, 77), (179, 255, 255)],
+					3: [(0, 157, 90), (8, 255, 255)]	}
 marker_pos = {		0: (0,0), 
 					1: (boxSize, 0),
 					2: (0, boxSize),
@@ -48,11 +48,20 @@ marker_pos = {		0: (0,0),
 angleView = 160 
 defaultRotate = 90
 
+camWidth = 480
+camHeight = 368
+
 # initialize the camera and grab a reference to the raw camera capture
 camera = PiCamera()
-camera.resolution = (480, 360)
+camera.resolution = (camWidth, camHeight)
 camera.framerate = 10
-rawCapture = PiRGBArray(camera, size=(480, 360))
+rawCapture = PiRGBArray(camera, size=(camWidth, camHeight))
+
+pickupBoxHeight = 65
+pickupBoxWidth = 215
+pickupBoxLeft = (95, 140)
+pickupBoxRight = (pickupBoxLeft[0]+pickupBoxWidth,
+		  camHeight)
 
 # allow the camera to warmup
 time.sleep(0.1)
@@ -72,13 +81,13 @@ def find_centers(image, rangeLower, rangeUpper):
 	# (x, y) center of the ball
 	# cv2.imshow("img", mask)
 	# key = cv2.waitKey(1) & 0xFF
-	
+
 	cnts = cv2.findContours(mask.copy(), cv2.RETR_EXTERNAL,
 		cv2.CHAIN_APPROX_SIMPLE)[-2]
 	return cnts
 
 def calcDist(focalLength, realRadius, pixelRadius):
-	return focalLength * realRadius/pixelRadius
+	return focalLength * float(realRadius)/pixelRadius - cameraDist
 
 def calcAngle(image, x):
 	height, width, _ = image.shape
@@ -173,7 +182,7 @@ def determine_closest_center(image, error):
 		center = (int(M["m10"] / M["m00"]), int(M["m01"] / M["m00"]))
 		if (abs(y - center[1]) < 20):
 			print "Probably the right ball"
-		angle = np.radians(calcAngle(image, x))
+		angle = calcAngle(image, x)
 
 	return center, radius, angle
 
@@ -189,7 +198,7 @@ def look_for_marker(image, marker_num):
 		x, y, w, h = cv2.boundingRect(c)
 
 		distance = calcDist(markerFocalLength, actualHeight, h)
-		angle = np.radians(calcAngle(image, x))
+		angle = calcAngle(image, x)
 
 		return angle, found, distance
 
@@ -197,7 +206,17 @@ def look_for_marker(image, marker_num):
 
 states = ["LOOK FOR BALL", "ROTATE TO LOOK", "MOVE", "PICKUP", "DONE", "LOOK FOR MARKER"]
 v = [False for i in xrange(num_markers)]
-data = {"angle": 0, "found": False, "is_ball": False, "num_rot": 0, "count": 0, "distance": -1, "positions": [], "visited": v, "curr_marker": -1}
+data = {"angle": 0,
+		"found": False,
+		"is_ball": False,
+		"num_rot": 0,
+		"count": 0,
+		"pickupCount": -1,
+		"distance": -1,
+		"positions": [],
+		"visited": v,
+		"curr_marker": -1,
+		"radius": -1}
 
 state_changed = False
 curr_state = states[0]
@@ -215,6 +234,8 @@ for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=
 
 	# LOOK FOR BALL
 	if curr_state == states[0]:
+		car.pickup(0)
+		data["pickupCount"] = -1
 
 		data["angle"], found, ball_center, data["distance"] = look_for_balls(image)
 		data["found"] = data["found"] or found
@@ -276,13 +297,13 @@ for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=
 
 		print "Angle: ", data["angle"]
 		if data["angle"] > 22 and data["angle"] < 67:
-			car.turnLeft45()
-		elif data["angle"] > 67:
-			car.turnLeft90()
-		elif data["angle"] < -22 and data["angle"] > -67:
 			car.turnRight45()
-		elif data["angle"] < -67:
+		elif data["angle"] > 67:
 			car.turnRight90()
+		elif data["angle"] < -22 and data["angle"] > -67:
+			car.turnLeft45()
+		elif data["angle"] < -67:
+			car.turnLeft90()
 
 		state_changed = True
 
@@ -328,21 +349,41 @@ for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=
 			# DEBUG
 			print "Radius: ", radius
 			print "Center: ", ball_center
+			print "Angle: ", data["angle"]
 
-			if radius > 25:
+
+			if data["pickupCount"] >= 0:
+				data["pickupCount"] += 1
+
+
+			center_x_in_box = ball_center[0] >= pickupBoxLeft[0] \
+					  and ball_center[0] <= pickupBoxRight[0]
+
+			center_y_in_box = ball_center[1] >= pickupBoxLeft[1] \
+					  and ball_center[1] <= pickupBoxRight[1]
+
+			if center_x_in_box and center_y_in_box:
+
+				###### PICKUP LOGIC HERE ###################
+				car.turnAngle(int(data["angle"] * 4)) # maybe x2 or another multiplier
+				car.pickup(50)
+				car.accel(25)
+				data["pickupCount"] = 0
+
+			elif data["pickupCount"] > 10: # Assumes eaten
 				state_changed = True
-				curr_state = states[3]
+				curr_state = states[0]
 				data["found"] = False
 				data["visited"] = [False for i in xrange(num_markers)]
 			else:
 				state_changed = False
 				print "Driving forward to ball"
-				car.turnAngle(int(data["angle"] * 3)) # maybe x2 or another multiplier
-				car.accelT(35, 0.75)
+				car.turnAngle(int(data["angle"] * 4)) # maybe x2 or another multiplier
+				car.accel(30)
+				data["radius"] = -1
+
 
 		else:
-
-			# TODO: Think of logic to move to marker, shouldn't be too hard
 			data["angle"], _, distance = look_for_marker(image, data["curr_marker"]) 
 			print "Distance of marker is: ", distance
 			if distance < 2:
@@ -354,14 +395,12 @@ for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=
 			else:
 				state_changed = False
 				print "Driving forward to marker"
-				car.turnAngle(int(data["angle"] * 3)) # maybe x2 or another multiplier
-				car.accelT(35, 0.75)
+				car.turnAngle(int(data["angle"] * 4)) # maybe x2 or another multiplier
+				car.accel(30)
 
-	# Pick up ball from here
-	elif curr_state == states[3]:
-		pickup()
-		state_changed = True
-		curr_state = states[0]
+	# # Pick up ball from here
+	# elif curr_state == states[3]:
+	# 	#pickup()
 
 	elif curr_state == states[4]:
 		print "Done doing things"
